@@ -1,0 +1,399 @@
+@prefix : <https://purl.archive.org/domain/csvtordf#> .
+@prefix csvtordf: <https://purl.archive.org/domain/csvtordf#> .
+@prefix csvw: <http://www.w3.org/ns/csvw#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+dc:contributor a owl:AnnotationProperty .
+
+dc:creator a owl:AnnotationProperty .
+
+csvw:Tablei a csvw:Table ;
+    csvw:row <http://www.w3.org/ns/csvw#Row=1>,
+        <http://www.w3.org/ns/csvw#Row=2>,
+        <http://www.w3.org/ns/csvw#Row=3>,
+        <http://www.w3.org/ns/csvw#Row=4>,
+        <http://www.w3.org/ns/csvw#Row=5> .
+
+csvw:column a owl:ObjectProperty ;
+    rdfs:comment "An array property of column descriptions."@en ;
+    rdfs:domain csvw:Column ;
+    rdfs:range csvw:Schema ;
+    owl:inverseOf csvtordf:hasColumn .
+
+csvw:datatype a owl:ObjectProperty ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( csvw:Column csvw:Schema ) ] ;
+    rdfs:range csvw:Datatype .
+
+csvw:describes a owl:ObjectProperty ;
+    rdfs:comment "From IANA describes: The relationship A 'describes' B asserts that resource A provides a description of resource B. There are no constraints on the format or representation of either A or B, neither are there any further constraints on either resource."@en ;
+    rdfs:domain csvw:Row ;
+    rdfs:range csvw:Column ;
+    owl:inverseOf csvtordf:isDescribedOf .
+
+csvw:format a owl:DatatypeProperty ;
+    rdfs:comment "Format of the file like comma seperated, tab seperated etc."@en ;
+    rdfs:domain csvw:Table ;
+    rdfs:range xsd:string .
+
+csvw:null a owl:DatatypeProperty ;
+    rdfs:comment "An atomic property giving the string or strings used for null values within the data. If the string value of the cell is equal to any one of these values, the cell value is 'null'."@en ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( csvw:Column csvw:Schema ) ] ;
+    rdfs:range xsd:string .
+
+csvw:row a owl:ObjectProperty ;
+    rdfs:comment "Relates a Table to each Row output."@en ;
+    rdfs:domain csvw:Table ;
+    rdfs:range csvw:Row ;
+    owl:inverseOf csvtordf:belongsToTable .
+
+csvw:rowTitle a owl:DatatypeProperty ;
+    rdfs:comment "A column reference property that holds either a single reference to a column description object or an array of references."@en ;
+    rdfs:domain csvw:Schema ;
+    rdfs:range xsd:string .
+
+csvw:rownum a owl:DatatypeProperty ;
+    rdfs:comment "The position of the row amongst the rows of the Table, starting from 1"@en ;
+    rdfs:domain csvw:Row ;
+    rdfs:range xsd:int .
+
+csvw:table a owl:ObjectProperty ;
+    rdfs:comment "Relates an Table group to annotated tables."@en ;
+    rdfs:domain csvw:TableGroup ;
+    rdfs:range csvw:Table ;
+    owl:inverseOf csvtordf:belongsToGroup .
+
+csvw:tableSchema a owl:ObjectProperty ;
+    rdfs:comment "An object property that provides a single schema description."@en ;
+    rdfs:domain csvw:Table ;
+    rdfs:range csvw:Schema ;
+    owl:inverseOf csvtordf:describesTable .
+
+<https://purl.archive.org/domain/csvtordf> a owl:Ontology ;
+    dc:contributor "Bojan Bozic",
+        "Luca Longo" ;
+    dc:creator "Aparna Nayak" ;
+    rdfs:comment "The CSV2RDF ontology leverages the CSVW (CSV on the Web) vocabulary to facilitate the transformation of tabular data from CSV files into RDF (Resource Description Framework) format, enabling seamless integration and sharing of data across the Semantic Web.The CSV2RDF ontology extends its capabilities by incorporating data quality information directly within the RDF output. This enhancement allows for the explicit modeling of syntax accuracy, completeness, and other quality metrics alongside the structured data, ensuring that data consumers can access the data for its reliability and suitability for various applications. The CSV2RDF ontology thus provides a comprehensive framework for both data conversion and the representation of associated metadata, bridging the gap between raw CSV data and the rich, interoperable world of linked data."@en ;
+    owl:versionInfo 2.0 .
+
+csvtordf:Completeness a owl:Class ;
+    rdfs:subClassOf csvtordf:DataQuality .
+
+csvtordf:Outliers a owl:Class ;
+    rdfs:subClassOf csvtordf:DataQuality ;
+    owl:disjointWith csvtordf:SyntaxAccuracy .
+
+csvtordf:Q1 a owl:DatatypeProperty ;
+    rdfs:domain csvw:Column ;
+    rdfs:range xsd:float .
+
+csvtordf:Q3 a owl:DatatypeProperty ;
+    rdfs:domain csvw:Column ;
+    rdfs:range xsd:float .
+
+csvtordf:belongsToColumn a owl:ObjectProperty ;
+    rdfs:domain csvw:Cell ;
+    rdfs:range csvw:Column ;
+    owl:inverseOf csvtordf:contains .
+
+csvtordf:constraintElement a owl:DatatypeProperty ;
+    rdfs:domain csvw:Column ;
+    rdfs:range [ a rdfs:Datatype ;
+            owl:unionOf ( xsd:anyURI xsd:boolean xsd:dateTime xsd:dateTimeStamp xsd:decimal xsd:double xsd:float xsd:int xsd:integer xsd:string ) ] .
+
+csvtordf:constraintType a owl:ObjectProperty ;
+    rdfs:domain csvw:Column ;
+    rdfs:range csvtordf:DataQuality .
+
+csvtordf:expectedDT a owl:DatatypeProperty ;
+    rdfs:domain csvw:Cell ;
+    rdfs:range [ a rdfs:Datatype ;
+            owl:unionOf ( xsd:anyURI xsd:boolean xsd:dateTime xsd:dateTimeStamp xsd:decimal xsd:double xsd:float xsd:int xsd:integer xsd:string ) ] .
+
+csvtordf:fileModified a owl:DatatypeProperty ;
+    rdfs:comment "Timestamp of the last modified of file."@en ;
+    rdfs:domain csvw:Table ;
+    rdfs:range xsd:dateTime .
+
+csvtordf:fileSize a owl:DatatypeProperty ;
+    rdfs:comment "Size of the file."@en ;
+    rdfs:domain csvw:Table ;
+    rdfs:range xsd:float .
+
+csvtordf:foundDT a owl:DatatypeProperty ;
+    rdfs:domain csvw:Cell ;
+    rdfs:range [ a rdfs:Datatype ;
+            owl:unionOf ( xsd:anyURI xsd:boolean xsd:dateTime xsd:dateTimeStamp xsd:decimal xsd:double xsd:float xsd:int xsd:integer xsd:string ) ] .
+
+csvtordf:hasConstraint a owl:ObjectProperty ;
+    rdfs:domain csvw:Column ;
+    rdfs:range csvtordf:DataQuality ;
+    rdfs:subPropertyOf owl:topObjectProperty .
+
+csvtordf:hasValue a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:comment "Represents cell value."@en ;
+    rdfs:domain [ a owl:Class ;
+            owl:unionOf ( csvw:Cell csvw:Column csvtordf:DataQuality ) ] ;
+    rdfs:range [ a rdfs:Datatype ;
+            owl:unionOf ( xsd:anyURI xsd:boolean xsd:dateTime xsd:dateTimeStamp xsd:decimal xsd:double xsd:float xsd:int xsd:integer xsd:string ) ] .
+
+csvtordf:invalidDate a owl:DatatypeProperty ;
+    rdfs:comment "Checks the data quality metric to see if there is any wrong date format."@en ;
+    rdfs:domain csvw:Column ;
+    rdfs:range xsd:boolean .
+
+csvtordf:lang a owl:DatatypeProperty ;
+    rdfs:comment "Represents language of the value."@en ;
+    rdfs:domain csvw:Column ;
+    rdfs:range xsd:string .
+
+csvtordf:mean a owl:DatatypeProperty ;
+    rdfs:comment "Represents mean value of the column if it has numeric value."@en ;
+    rdfs:domain csvw:Column ;
+    rdfs:range xsd:float .
+
+csvtordf:stdDev a owl:DatatypeProperty ;
+    rdfs:comment "Represents standard deviation value of the column if it has numeric value."@en ;
+    rdfs:domain csvw:Column ;
+    rdfs:range xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=1-Attr1> a csvw:Cell ;
+    csvtordf:hasValue 0 .
+
+<http://www.w3.org/ns/csvw#Cell=1-Attr2> a csvw:Cell ;
+    csvtordf:hasValue 1 .
+
+<http://www.w3.org/ns/csvw#Cell=1-Attr3> a csvw:Cell ;
+    csvtordf:hasValue 2 .
+
+<http://www.w3.org/ns/csvw#Cell=1-Attr4> a csvw:Cell ;
+    csvtordf:hasValue 3 .
+
+<http://www.w3.org/ns/csvw#Cell=1-Attr5> a csvw:Cell ;
+    csvtordf:hasValue 4 .
+
+<http://www.w3.org/ns/csvw#Cell=2-Attr1> a csvw:Cell ;
+    csvtordf:hasValue "5.1"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=2-Attr2> a csvw:Cell ;
+    csvtordf:hasValue "3.5"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=2-Attr3> a csvw:Cell ;
+    csvtordf:hasValue "1.4"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=2-Attr4> a csvw:Cell ;
+    csvtordf:hasValue "0.2"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=2-Attr5> a csvw:Cell ;
+    csvtordf:hasValue "Iris-setosa"^^xsd:string .
+
+<http://www.w3.org/ns/csvw#Cell=3-Attr1> a csvw:Cell ;
+    csvtordf:hasValue "4.9"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=3-Attr2> a csvw:Cell ;
+    csvtordf:hasValue 3 .
+
+<http://www.w3.org/ns/csvw#Cell=3-Attr3> a csvw:Cell ;
+    csvtordf:hasValue "1.4"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=3-Attr4> a csvw:Cell ;
+    csvtordf:hasValue "0.2"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=3-Attr5> a csvw:Cell ;
+    csvtordf:hasValue "Iris-setosa"^^xsd:string .
+
+<http://www.w3.org/ns/csvw#Cell=4-Attr1> a csvw:Cell ;
+    csvtordf:hasValue "4.7"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=4-Attr2> a csvw:Cell ;
+    csvtordf:hasValue "3.2"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=4-Attr3> a csvw:Cell ;
+    csvtordf:hasValue "1.3"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=4-Attr4> a csvw:Cell ;
+    csvtordf:hasValue "0.2"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=4-Attr5> a csvw:Cell ;
+    csvtordf:hasValue "Iris-setosa"^^xsd:string .
+
+<http://www.w3.org/ns/csvw#Cell=5-Attr1> a csvw:Cell ;
+    csvtordf:hasValue "4.6"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=5-Attr2> a csvw:Cell ;
+    csvtordf:hasValue "3.1"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=5-Attr3> a csvw:Cell ;
+    csvtordf:hasValue "1.5"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=5-Attr4> a csvw:Cell ;
+    csvtordf:hasValue "0.2"^^xsd:float .
+
+<http://www.w3.org/ns/csvw#Cell=5-Attr5> a csvw:Cell ;
+    csvtordf:hasValue "Iris-setosa"^^xsd:string .
+
+csvw:Datatype a owl:Class ;
+    rdfs:comment "Describes facets of a datatype." ;
+    owl:disjointWith csvw:Row,
+        csvw:Schema,
+        csvw:TableGroup .
+
+<http://www.w3.org/ns/csvw#Row=1> a csvw:Row ;
+    csvw:rownum "1"^^xsd:int ;
+    csvtordf:describes csvw:Column_Attr1,
+        csvw:Column_Attr2,
+        csvw:Column_Attr3,
+        csvw:Column_Attr4,
+        csvw:Column_Attr5 .
+
+<http://www.w3.org/ns/csvw#Row=2> a csvw:Row ;
+    csvw:rownum "2"^^xsd:int ;
+    csvtordf:describes csvw:Column_Attr1,
+        csvw:Column_Attr2,
+        csvw:Column_Attr3,
+        csvw:Column_Attr4,
+        csvw:Column_Attr5 .
+
+<http://www.w3.org/ns/csvw#Row=3> a csvw:Row ;
+    csvw:rownum "3"^^xsd:int ;
+    csvtordf:describes csvw:Column_Attr1,
+        csvw:Column_Attr2,
+        csvw:Column_Attr3,
+        csvw:Column_Attr4,
+        csvw:Column_Attr5 .
+
+<http://www.w3.org/ns/csvw#Row=4> a csvw:Row ;
+    csvw:rownum "4"^^xsd:int ;
+    csvtordf:describes csvw:Column_Attr1,
+        csvw:Column_Attr2,
+        csvw:Column_Attr3,
+        csvw:Column_Attr4,
+        csvw:Column_Attr5 .
+
+<http://www.w3.org/ns/csvw#Row=5> a csvw:Row ;
+    csvw:rownum "5"^^xsd:int ;
+    csvtordf:describes csvw:Column_Attr1,
+        csvw:Column_Attr2,
+        csvw:Column_Attr3,
+        csvw:Column_Attr4,
+        csvw:Column_Attr5 .
+
+csvtordf:SyntaxAccuracy a owl:Class ;
+    rdfs:subClassOf csvtordf:DataQuality .
+
+csvtordf:belongsToGroup a owl:ObjectProperty ;
+    rdfs:domain csvw:Table ;
+    rdfs:range csvw:TableGroup .
+
+csvtordf:belongsToTable a owl:ObjectProperty ;
+    rdfs:domain csvw:Row ;
+    rdfs:range csvw:Table .
+
+csvtordf:contains a owl:ObjectProperty ;
+    rdfs:domain csvw:Column ;
+    rdfs:range csvw:Cell .
+
+csvtordf:describesTable a owl:ObjectProperty ;
+    rdfs:domain csvw:Schema ;
+    rdfs:range csvw:Table .
+
+csvtordf:hasColumn a owl:ObjectProperty ;
+    rdfs:domain csvw:Schema ;
+    rdfs:range csvw:Column .
+
+csvtordf:isDescribedOf a owl:ObjectProperty ;
+    rdfs:domain csvw:Column ;
+    rdfs:range csvw:Row .
+
+csvw:TableGroup a owl:Class ;
+    rdfs:comment "A Group of Tables comprises a set of Annotated Tables and a set of annotations that relate to those Tables."@en .
+
+csvw:Column_Attr1 a csvw:Column ;
+    csvw:datatype xsd:float ;
+    csvtordf:contains <http://www.w3.org/ns/csvw#Cell=1-Attr1>,
+        <http://www.w3.org/ns/csvw#Cell=2-Attr1>,
+        <http://www.w3.org/ns/csvw#Cell=3-Attr1>,
+        <http://www.w3.org/ns/csvw#Cell=4-Attr1>,
+        <http://www.w3.org/ns/csvw#Cell=5-Attr1> ;
+    csvtordf:hasConstraint [ a csvtordf:DataQuality ;
+            csvtordf:constraintElement "10"^^xsd:float ;
+            csvtordf:constraintType csvw:Completeness ] ;
+    csvtordf:mean "4.99"^^xsd:float ;
+    csvtordf:stdDev "0.38"^^xsd:float .
+
+csvw:Column_Attr2 a csvw:Column ;
+    csvw:datatype xsd:float ;
+    csvtordf:contains <http://www.w3.org/ns/csvw#Cell=1-Attr2>,
+        <http://www.w3.org/ns/csvw#Cell=2-Attr2>,
+        <http://www.w3.org/ns/csvw#Cell=3-Attr2>,
+        <http://www.w3.org/ns/csvw#Cell=4-Attr2>,
+        <http://www.w3.org/ns/csvw#Cell=5-Attr2> ;
+    csvtordf:hasConstraint [ a csvtordf:DataQuality ;
+            csvtordf:constraintElement "10"^^xsd:float ;
+            csvtordf:constraintType csvw:Completeness ] ;
+    csvtordf:mean "3.15"^^xsd:float ;
+    csvtordf:stdDev "0.18"^^xsd:float .
+
+csvw:Column_Attr3 a csvw:Column ;
+    csvw:datatype xsd:float ;
+    csvtordf:Q1 "1.4"^^xsd:float ;
+    csvtordf:Q3 "1.5"^^xsd:float ;
+    csvtordf:contains <http://www.w3.org/ns/csvw#Cell=1-Attr3>,
+        <http://www.w3.org/ns/csvw#Cell=2-Attr3>,
+        <http://www.w3.org/ns/csvw#Cell=3-Attr3>,
+        <http://www.w3.org/ns/csvw#Cell=4-Attr3>,
+        <http://www.w3.org/ns/csvw#Cell=5-Attr3> ;
+    csvtordf:hasConstraint [ a csvtordf:DataQuality ;
+            csvtordf:constraintElement "10"^^xsd:float ;
+            csvtordf:constraintType csvw:Completeness ] .
+
+csvw:Column_Attr4 a csvw:Column ;
+    csvw:datatype xsd:float ;
+    csvtordf:Q1 "0.2"^^xsd:float ;
+    csvtordf:Q3 "0.2"^^xsd:float ;
+    csvtordf:contains <http://www.w3.org/ns/csvw#Cell=1-Attr4>,
+        <http://www.w3.org/ns/csvw#Cell=2-Attr4>,
+        <http://www.w3.org/ns/csvw#Cell=3-Attr4>,
+        <http://www.w3.org/ns/csvw#Cell=4-Attr4>,
+        <http://www.w3.org/ns/csvw#Cell=5-Attr4> ;
+    csvtordf:hasConstraint [ a csvtordf:DataQuality ;
+            csvtordf:constraintElement "10"^^xsd:float ;
+            csvtordf:constraintType csvw:Completeness ] .
+
+csvw:Column_Attr5 a csvw:Column ;
+    csvw:datatype xsd:string ;
+    csvtordf:contains <http://www.w3.org/ns/csvw#Cell=1-Attr5>,
+        <http://www.w3.org/ns/csvw#Cell=2-Attr5>,
+        <http://www.w3.org/ns/csvw#Cell=3-Attr5>,
+        <http://www.w3.org/ns/csvw#Cell=4-Attr5>,
+        <http://www.w3.org/ns/csvw#Cell=5-Attr5> ;
+    csvtordf:hasConstraint [ a csvtordf:DataQuality ;
+            csvtordf:constraintElement "10"^^xsd:float ;
+            csvtordf:constraintType csvw:Completeness ] ;
+    csvtordf:language "et" .
+
+csvw:Schema a owl:Class ;
+    rdfs:comment "A Schema is a definition of a tabular format that may be common to multiple tables." ;
+    owl:disjointWith csvw:TableGroup .
+
+csvw:Table a owl:Class ;
+    rdfs:comment "A table represents a dataset or annotated table." .
+
+csvw:Row a owl:Class ;
+    rdfs:comment "A Row represents a horizontal arrangement of cells within a Table."@en .
+
+csvtordf:DataQuality a owl:Class .
+
+csvw:Column a owl:Class ;
+    rdfs:comment "A Column represents a vertical arrangement of Cells within a Table."@en .
+
+csvw:Cell a owl:Class ;
+    rdfs:comment "A Cell represents a cell at the intersection of a Row and a Column within a Table." .
+
